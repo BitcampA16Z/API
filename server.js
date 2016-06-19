@@ -14,15 +14,21 @@ app.get('/', function (req, res) {
     var query = req.query.query;
     var ghusername = req.query.ghusername;
 
-    var testQuery = "Show my commits in pingpong on Github";
+    var testQuery = "show my commits in Nutrit on Github";
 
-    github(testQuery);
+    github(testQuery.toLowerCase(), "vwsong", function(response){
+        res.send(response);
+    });
     //    var response;
     //    hdfy(query, function (response) {
     //        res.send({
     //            "result": response
     //        });
     //    });
+});
+
+app.get('/github', function(req, res){
+    
 });
 
 function hdfy(query, callback) {

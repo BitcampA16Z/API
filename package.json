@@ -19,6 +19,7 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.14.0",
+    "fuzzy": "^0.1.1",
     "prompt": "^1.0.0"
   }
 }
