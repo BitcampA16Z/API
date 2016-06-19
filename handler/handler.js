@@ -1,5 +1,5 @@
 
-export class Handler {
+module.exports = class Handler {
   constructor(obj){
     this.req = obj;
     this.template = this.template();

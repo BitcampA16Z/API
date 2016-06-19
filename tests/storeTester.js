@@ -19,6 +19,25 @@ class GitHub extends Handler {
 
 }
 
-var store = new Store('show commits',[GitHub],function(stre){
+class Wow extends Handler {
+  constructor(text){
+    super(text);
+  }
+
+  template(){
+    return [
+      'play music',
+      'play some music'
+    ]
+  }
+
+  res(text){
+    return `This is music and you said ${text}`
+  }
+
+}
+
+
+var store = new Store('show commits',[GitHub,Wow],function(stre){
   console.log(stre.pullResponse());
 });
