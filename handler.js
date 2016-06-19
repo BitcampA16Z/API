@@ -13,14 +13,39 @@ module.exports.Store = class Store extends EventEmitter {
 }
 
 module.exports.Handler = class Handler extends EventEmitter {
-  constructor(){
+  constructor(intent){
     super();
+    this.intent = intent;
     this.template = this.template();
     this.on('data',this.dataHandler);
+    this.on('success',this.successFunction);
+    this.on('error',this.failureFunction);
   }
 
   dataHandler(data){
-    console.log(this.templateParser(data));
+    this.templateParser(data);
+  }
+
+  successFunction(successObject){
+    console.log(successObject)
+  }
+
+  failureFunction(failureObject){
+    console.log(failureObject)
+  }
+
+  emitSuccess(){
+    this.emit('success',{
+      state:'success',
+      intent:this.intent
+    });
+  }
+
+  emitFailure(){
+    this.emit('error',{
+      state:'error',
+      intent:this.intent
+    })
   }
 
   templateParser(data){
@@ -31,17 +56,17 @@ module.exports.Handler = class Handler extends EventEmitter {
         if(i[x]!=data[x])
           break;
         if(x == i.length-1)
-          return true;
+          this.emitSuccess();
       }
 
     }
-    return false;
+    this.emitFailure();
   }
 
   template(){
     return [
-      'show commits',
-      'please show me commits'
+      'template plz',
+      'template',
     ]
   }
 }
