@@ -3,8 +3,9 @@ const EventEmitter = require('events');
 module.exports.Store = class Store extends EventEmitter {
   constructor(handlers){
     super();
-    this.on('data',(data) => {
+    this.on('data',(data,cb) => {
       for(var i of handlers){
+        i.cb = cb;
         i.emit('data',data);
       }
     });
@@ -16,6 +17,7 @@ module.exports.Handler = class Handler extends EventEmitter {
   constructor(intent){
     super();
     this.intent = intent;
+    this.params = {};
     this.template = this.template();
     this.on('data',this.dataHandler);
     this.on('success',this.successFunction);
@@ -27,11 +29,11 @@ module.exports.Handler = class Handler extends EventEmitter {
   }
 
   successFunction(successObject){
-    console.log(successObject)
+    this.respond(successObject,this.cb);
   }
 
   failureFunction(failureObject){
-    console.log(failureObject)
+    this.cb(failureObject)
   }
 
   emitSuccess(){
@@ -53,7 +55,14 @@ module.exports.Handler = class Handler extends EventEmitter {
     for(var i of this.template){
       i = i.split(" ");
       for(var x in i){
-        if(i[x]!=data[x])
+        if(i[x].includes('}}')){
+          var varname = i[x].match("\{{([^}]*)\}}");
+          var left = i[x-1];
+          var right = i[x+1];
+          var sliced = data.slice(data.indexOf(left)+1,data.indexOf(right)-1)
+          this.params[varname[1]] = sliced.join(" ");
+        }
+        else if(i[x]!=data[x])
           break;
         if(x == i.length-1){
           this.emitSuccess();

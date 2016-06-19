@@ -19,6 +19,8 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.14.0",
-    "prompt": "^1.0.0"
+    "prompt": "^1.0.0",
+    "sleep": "^3.0.1",
+    "spotify-web-api-node": "^2.3.0"
   }
 }
