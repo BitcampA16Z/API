@@ -1,4 +1,4 @@
-var access_token = "bfc679f6f560b2a396a2026626a33ccc566832fd";
+var token = "b33ad636a9468ceeff7" + "57795c7bfa2ae3b39bb78";
 var request = require('request');
 var fuzzy = require('fuzzyset.js');
 
@@ -21,6 +21,14 @@ module.exports = function handleGithubRequests(query, ghusername, callback) {
         });
     } else if (query.includes("repo") || query.includes("repository")) {
         repoSearch(query, ghusername, function (res) {
+            callback(res);
+        });
+    } else if (query.includes("notifications")) {
+        handleNotifications(query, ghusername, function (res) {
+            callback(res);
+        });
+    } else {
+        hdfy(query, function (res) {
             callback(res);
         });
     }
@@ -51,20 +59,22 @@ function handleCommits(query, ghusername, callback) {
         }
     }
     if (dictionary["repo"] != null) {
+        console.log("TEST1");
         //https://api.github.com/repos/vwsong/pingpong/commits?Authorization=bfc679f6f560b2a396a2026626a33ccc566832fd
         request({
-            url: "https://api.github.com/users/vwsong/repos?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd",
+            url: "https://api.github.com/users/" + ghusername + "/repos?access_token=" + token,
             headers: {
                 "User-Agent": "vwsong"
             },
             json: true
         }, function (err, resp, body) {
+            console.log("TEST2");
             repos = FuzzySet();
             for (var i = 0; i < body.length; i++) {
                 repos.add(body[i].name);
             }
             if (repos.get(dictionary["repo"]) != null) {
-                var url = "https://api.github.com/repos/" + ghusername + "/" + repos.get(dictionary["repo"])[0][1] + "/commits?Authorization=bfc679f6f560b2a396a2026626a33ccc566832fd";
+                var url = "https://api.github.com/repos/" + ghusername + "/" + repos.get(dictionary["repo"])[0][1] + "/commits?Authorization=" + token;
                 request({
                     url: url,
                     headers: {
@@ -111,7 +121,7 @@ function userSearch(query, ghusername, callback) {
     }
     if (dictionary["username"] != null) {
         //https://api.github.com/users/vwsong?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd
-        var url = "https://api.github.com/users/" + dictionary['username'] + "?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd";
+        var url = "https://api.github.com/users/" + dictionary['username'] + "?access_token=" + token;
         console.log(url);
         request({
             url: url,
@@ -157,7 +167,7 @@ function userInfoSearch(query, ghusername, callback) {
     }
 
     //https://api.github.com/users/vwsong?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd
-    var url = "https://api.github.com/users/" + ghusername + "?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd";
+    var url = "https://api.github.com/users/" + ghusername + "?access_token=" + token;
     console.log(url);
     request({
         url: url,
@@ -181,7 +191,6 @@ function urlSearch(query, ghusername, callback) {
             "show my account on github",
             "show my account url"
     ];
-    console.log("TEST");
     for (var i = 0; i < showCommits.length; i++) {
         var showCommitsSplit = showCommits[i].split(" ");
         if (showCommitsSplit.length == querySplit.length) {
@@ -198,7 +207,7 @@ function urlSearch(query, ghusername, callback) {
     }
 
     //https://api.github.com/users/vwsong?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd
-    var url = "https://api.github.com/users/" + ghusername + "?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd";
+    var url = "https://api.github.com/users/" + ghusername + "?access_token=" + token;
     console.log(url);
     request({
         url: url,
@@ -243,7 +252,7 @@ function repoSearch(query, ghusername, callback) {
     //https://api.github.com/users/vwsong/repos?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd
     if (dictionary["repository"] != null) {
         //https://api.github.com/search/repositories?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd&q=Bootstrap
-        var url = "https://api.github.com/search/repositories?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd&q=" + dictionary['repository'];
+        var url = "https://api.github.com/search/repositories?access_token=b33ad636a9468ceeff757795c7bfa2ae3b39bb78&" + dictionary['repository'];
         console.log(url);
         request({
             url: url,
@@ -259,7 +268,7 @@ function repoSearch(query, ghusername, callback) {
     }
     if (dictionary["repository"] != null) {
         //https://api.github.com/users/vwsong?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd
-        var url = "https://api.github.com/search/repositories?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd&q=" + dictionary['repository'];
+        var url = "https://api.github.com/search/repositories?access_token=b33ad636a9468ceeff757795c7bfa2ae3b39bb78" + dictionary['repository'];
         console.log(url);
         request({
             url: url,
@@ -273,5 +282,83 @@ function repoSearch(query, ghusername, callback) {
     } else {
 
     }
+    console.log(JSON.stringify(dictionary));
+}
+
+function hdfy(query, callback) {
+    var request = require('request');
+    var uuid = require('node-uuid');
+
+    //We can declare our own catches here!
+    var houndRequest = {
+        //This is where we specify the ClientMatch JSON in the RequestInfo Object
+        //        ClientMatches: [
+        //        {
+        //            "Expression": "\"turn\" . \"on\" . [\"the\"] . (\"light\" | \"lights\")",
+        //            "Result": {
+        //                "Intent": "TURN_LIGHT_ON"
+        //            },
+        //            "SpokenResponse": "Ok, I'm turning the lights on.",
+        //            "SpokenResponseLong": "Ok, I'm turning the lights on.",
+        //            "WrittenResponse": "Ok, I'm turning the lights on.",
+        //            "WrittenResponseLong": "Ok, I'm turning the lights on."
+        //        },]
+    };
+
+    request({
+        url: 'https://api.houndify.com/v1/text?query=' + query,
+        headers: {
+            'Hound-Request-Authentication': "houndify_try_api_user;3ac7d580-362a-11e6-9f50-95528cc40d0e",
+            'Hound-Client-Authentication': "jj_E0R4yxYBfyUffpY2sPw==;1466346568;u6WI9ZIZ-kgNwLtWrEBYUz99_6j5JwXCF7z6mbdgdpk=",
+            'Hound-Request-Info': JSON.stringify(houndRequest)
+        },
+        json: true
+    }, function (err, resp, body) {
+        //        console.log(body);
+        console.log(body.AllResults[0].WrittenResponseLong);
+        callback({
+            houdifyResponse: body.AllResults[0].WrittenResponseLong
+        });
+    });
+}
+
+function handleNotifications(query, ghusername, callback) {
+    var dictionary = {};
+    var querySplit = query.split(" ");
+    var showCommits = [
+            "show my notifications on github",
+            "show my notifications",
+            "show my github notifications",
+            "show my account notifications",
+            "show my notifications"
+    ];
+    for (var i = 0; i < showCommits.length; i++) {
+        var showCommitsSplit = showCommits[i].split(" ");
+        if (showCommitsSplit.length == querySplit.length) {
+            for (var j = 0; j < querySplit.length; j++) {
+                if (showCommitsSplit[j].includes("}}")) {
+                    var variable = showCommitsSplit[j].match("\{{([^}]*)\}}");
+                    dictionary[variable[1]] = querySplit[j];
+                } else if (showCommitsSplit[j].toLowerCase() != querySplit[j].toLowerCase()) {
+                    dictionary = {};
+                    break;
+                }
+            }
+        }
+    }
+
+    //https://api.github.com/users/vwsong?access_token=bfc679f6f560b2a396a2026626a33ccc566832fd
+    var url = "https://api.github.com/notifications?access_token=b33ad636a9468ceeff757795c7bfa2ae3b39bb78";
+    console.log(url);
+    request({
+        url: url,
+        headers: {
+            "User-Agent": "vwsong"
+        },
+        json: true
+    }, function (err, resp, body) {
+        callback(body);
+    });
+
     console.log(JSON.stringify(dictionary));
 }
