@@ -55,8 +55,10 @@ module.exports.Handler = class Handler extends EventEmitter {
       for(var x in i){
         if(i[x]!=data[x])
           break;
-        if(x == i.length-1)
+        if(x == i.length-1){
           this.emitSuccess();
+          return;
+        }
       }
 
     }

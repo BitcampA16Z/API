@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/BitcampA16Z/API#readme",
   "dependencies": {
-    "express": "^4.14.0"
+    "body-parser": "^1.15.1",
+    "express": "^4.14.0",
+    "prompt": "^1.0.0"
   }
 }
