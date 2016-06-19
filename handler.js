@@ -1,20 +1,26 @@
 'use strict';
 
 const EventEmitter = require('events');
+var Sync = require('sync')
+
 
 module.exports.Store = class Store extends EventEmitter {
   constructor(handlers){
     super();
+
+    var that = this;
     this.on('data',(data,cb) => {
-      for(var i of handlers){
-        i.cb = cb;
-        i.emit('data',data);
-      }
+      Sync(function(){
+        for(var i of handlers){
+          i.cb = cb;
+          i.emit('data',data);
+        }
+      })
+    
     });
+    console.log('finished with all other handlers')
   }
-
 }
-
 module.exports.Handler = class Handler extends EventEmitter {
   constructor(intent){
     super();
@@ -27,6 +33,7 @@ module.exports.Handler = class Handler extends EventEmitter {
   }
 
   dataHandler(data){
+    this.data = data;
     this.templateParser(data);
   }
 
@@ -35,7 +42,7 @@ module.exports.Handler = class Handler extends EventEmitter {
   }
 
   failureFunction(failureObject){
-    this.cb(failureObject)
+    console.log('failure')
   }
 
   emitSuccess(){
@@ -62,6 +69,9 @@ module.exports.Handler = class Handler extends EventEmitter {
           var left = i[x-1];
           var right = i[x+1];
           var sliced = data.slice(data.indexOf(left)+1,data.indexOf(right)-1)
+          data.splice(data.indexOf(left)+1,data.indexOf(right)-data.indexOf(left)+2)
+          console.log(data,i)
+          console.log(sliced)
           this.params[varname[1]] = sliced.join(" ");
         }
         else if(i[x]!=data[x])
@@ -73,7 +83,6 @@ module.exports.Handler = class Handler extends EventEmitter {
       }
 
     }
-    this.emitFailure();
   }
 
   template(){
