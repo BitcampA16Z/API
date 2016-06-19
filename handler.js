@@ -10,13 +10,12 @@ module.exports.Store = class Store extends EventEmitter {
 
     var that = this;
     this.on('data',(data,cb) => {
-      Sync(function(){
         for(var i of handlers){
           i.cb = cb;
           i.emit('data',data);
         }
-      })
-    
+
+
     });
     console.log('finished with all other handlers')
   }

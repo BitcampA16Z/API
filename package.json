@@ -19,13 +19,9 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.14.0",
-<<<<<<< HEAD
     "prompt": "^1.0.0",
     "sleep": "^3.0.1",
-    "spotify-web-api-node": "^2.3.0"
-=======
-    "fuzzy": "^0.1.1",
-    "prompt": "^1.0.0"
->>>>>>> 9c5d3f613fcdb23dccd3734918153027d1e5f44a
+    "spotify-web-api-node": "^2.3.0",
+    "sync": "^0.2.5"
   }
 }

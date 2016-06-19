@@ -108,7 +108,7 @@ class SpotifyPause extends Handler {
 
 
 //the default handler always goes last
-const stor = new Store([new SpotifyPlay(),new SpotifyPause(),new Default()]);
+const stor = new Store([new SpotifyPlay(),new SpotifyPause()]);
 
 
 //Here we are configuring express to use body-parser as middle-ware.
