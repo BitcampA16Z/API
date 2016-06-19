@@ -1,13 +1,9 @@
 var express = require('express');
 var app = express();
 
-//app.post('/', function (req, res) {
-//    console.log(req.text);
-//});
-
-
+var github = require('./github.js');
 /*
-input: search query
+input: search query, gh username
 output: search result from Houndify
 {
     "result" : response
@@ -16,34 +12,39 @@ output: search result from Houndify
 */
 app.get('/', function (req, res) {
     var query = req.query.query;
-    var response;
-    hdfy(query, function(response) {
-        res.send({
-           "result" : response
-        });
-    });
+    var ghusername = req.query.ghusername;
+
+    var testQuery = "Show my commits in pingpong on Github";
+
+    github(testQuery);
+    //    var response;
+    //    hdfy(query, function (response) {
+    //        res.send({
+    //            "result": response
+    //        });
+    //    });
 });
 
 function hdfy(query, callback) {
     var request = require('request');
     var uuid = require('node-uuid');
 
-  //We can declare our own catches here!
-  var houndRequest = {
+    //We can declare our own catches here!
+    var houndRequest = {
         //This is where we specify the ClientMatch JSON in the RequestInfo Object
-//        ClientMatches: [
-//        {
-//            "Expression": "\"turn\" . \"on\" . [\"the\"] . (\"light\" | \"lights\")",
-//            "Result": {
-//                "Intent": "TURN_LIGHT_ON"
-//            },
-//            "SpokenResponse": "Ok, I'm turning the lights on.",
-//            "SpokenResponseLong": "Ok, I'm turning the lights on.",
-//            "WrittenResponse": "Ok, I'm turning the lights on.",
-//            "WrittenResponseLong": "Ok, I'm turning the lights on."
-//        },]
+        //        ClientMatches: [
+        //        {
+        //            "Expression": "\"turn\" . \"on\" . [\"the\"] . (\"light\" | \"lights\")",
+        //            "Result": {
+        //                "Intent": "TURN_LIGHT_ON"
+        //            },
+        //            "SpokenResponse": "Ok, I'm turning the lights on.",
+        //            "SpokenResponseLong": "Ok, I'm turning the lights on.",
+        //            "WrittenResponse": "Ok, I'm turning the lights on.",
+        //            "WrittenResponseLong": "Ok, I'm turning the lights on."
+        //        },]
     };
-    
+
     request({
         url: 'https://api.houndify.com/v1/text?query=' + query,
         headers: {
@@ -59,4 +60,14 @@ function hdfy(query, callback) {
     });
 }
 
+//
+//function getIntent(query) {
+//    var listOfIntents = ['GitHub', 'Spotify', 'Chrome', 'Houndify'];
+//    for (var i = 0; i < listOfIntents.length; i++) {
+//        if (query.includes(listOfIntents[i]) {
+//                return listOfIntents[i];
+//            }
+//        }
+//    }
+//}
 app.listen(3000);
